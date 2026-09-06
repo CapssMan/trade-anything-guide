@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="ru" data-lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trade Anything — HOI4 Mod Guide</title>
+<meta name="description" content="Trade Anything — мод для Hearts of Iron IV. Торгуйте территориями, снаряжением, кораблями, фабриками, людскими ресурсами и политической властью. ИИ оценивает сделку по-настоящему.">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+:root{
+  --ink:#0e1216;
+  --panel:#161b21;
+  --panel-2:#1d242c;
+  --edge:#2b343e;
+  --edge-hi:#3d4a57;
+  --brass:#c9a24a;
+  --brass-dim:#8a6f33;
+  --paper:#e8e4d9;
+  --steel:#a3aeb8;
+  --steel-dim:#77838d;
+  --alert:#c06a4d;
+  --good:#8fae69;
+  --maxw:1180px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:
+    radial-gradient(1200px 600px at 50% -10%, #1b222a 0%, var(--ink) 60%);
+  background-attachment:fixed;
+  color:var(--paper);
+  font-family:"Source Sans 3",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;
+  line-height:1.55;
+}
+img{max-width:100%;display:block;}
+a{color:inherit;}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;}
+
+/* language visibility */
+[data-t]{display:none;}
+html[data-lang="ru"] [data-t="ru"]{display:inherit;}
+html[data-lang="en"] [data-t="en"]{display:inherit;}
+html[data-lang="ru"] span[data-t="ru"],
+html[data-lang="en"] span[data-t="en"]{display:inline;}
+html[data-lang="ru"] li[data-t="ru"],
+html[data-lang="en"] li[data-t="en"]{display:list-item;}
+
+/* ---------- header ---------- */
+header{
+  position:sticky;top:0;z-index:40;
+  background:rgba(14,18,22,.88);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--edge);
+}
+.nav{
+  display:flex;align-items:center;gap:20px;
+  padding:14px 24px;max-width:var(--maxw);margin:0 auto;
+}
+.brand{display:flex;align-items:center;gap:12px;font-family:"Fjalla One",Impact,sans-serif;letter-spacing:.03em;font-size:19px;text-transform:uppercase;color:var(--paper);text-decoration:none;flex:0 0 auto;}
+.brand img{width:30px;height:30px;border-radius:6px;border:1px solid var(--edge-hi);}
+.navlinks{display:flex;gap:4px;flex:1;flex-wrap:wrap;}
+.navlinks a{
+  font-family:"JetBrains Mono",monospace;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--steel);text-decoration:none;padding:8px 12px;border-radius:4px;
+}
+.navlinks a:hover{color:var(--paper);background:var(--panel-2);}
+.langsw{display:flex;border:1px solid var(--edge-hi);border-radius:6px;overflow:hidden;flex:0 0 auto;}
+.langsw button{
+  font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.08em;
+  background:var(--panel);color:var(--steel);border:none;padding:8px 13px;cursor:pointer;
+}
+.langsw button.active{background:var(--brass);color:var(--ink);font-weight:700;}
+
+@media (max-width:760px){
+  .nav{flex-wrap:wrap;padding:12px 18px;gap:12px 16px;}
+  .brand{order:1;}
+  .langsw{order:2;margin-left:auto;}
+  .navlinks{order:3;flex-basis:100%;justify-content:center;gap:2px;}
+  .navlinks a{padding:6px 9px;font-size:11.5px;}
+}
+
+/* ---------- hero ---------- */
+.hero{padding:76px 0 56px;text-align:center;}
+.hero .mark{
+  font-family:"JetBrains Mono",monospace;font-size:14px;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--brass);margin-bottom:22px;
+}
+.hero h1{
+  font-family:"Fjalla One",Impact,sans-serif;font-size:clamp(46px,9vw,96px);line-height:.96;
+  letter-spacing:.01em;text-transform:uppercase;margin:0 0 22px;color:var(--paper);
+}
+.hero p.sub{
+  max-width:56ch;margin:0 auto 36px;color:var(--steel);font-size:clamp(16px,2.4vw,20px);
+}
+.hero p.sub strong{color:var(--paper);font-weight:600;}
+.cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+.btn{
+  font-family:"JetBrains Mono",monospace;font-size:13px;letter-spacing:.08em;text-transform:uppercase;
+  padding:14px 24px;border-radius:6px;text-decoration:none;border:1px solid var(--edge-hi);
+  display:inline-flex;align-items:center;gap:9px;transition:transform .12s ease, background .12s ease;
+}
+.btn:hover{transform:translateY(-1px);}
+.btn.primary{background:var(--brass);color:var(--ink);border-color:var(--brass);font-weight:700;}
+.btn.primary:hover{background:#dab35a;}
+.btn.ghost{background:var(--panel);color:var(--paper);}
+.btn.ghost:hover{background:var(--panel-2);}
+.assets-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:34px;}
+.assets-row span{
+  font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.08em;
+  border:1px solid var(--edge);padding:7px 13px;border-radius:5px;color:var(--steel-dim);
+}
+
+/* ---------- sections ---------- */
+section{padding:64px 0;border-top:1px solid var(--edge);}
+.eyebrow{
+  font-family:"JetBrains Mono",monospace;font-size:13px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--brass);margin-bottom:12px;
+}
+h2.title{
+  font-family:"Fjalla One",Impact,sans-serif;font-size:clamp(30px,4.5vw,44px);line-height:1.05;
+  letter-spacing:.01em;margin:0 0 16px;color:var(--paper);text-transform:uppercase;
+}
+p.lede{max-width:70ch;color:var(--steel);font-size:17px;margin:0 0 36px;}
+p.lede strong{color:var(--paper);font-weight:600;}
+
+/* gallery */
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.gallery figure{margin:0;border:1px solid var(--edge);background:var(--panel);border-radius:8px;overflow:hidden;cursor:zoom-in;}
+.gallery img{aspect-ratio:16/9;object-fit:cover;transition:transform .25s ease;}
+.gallery figure:hover img{transform:scale(1.035);}
+.gallery figcaption{
+  font-family:"JetBrains Mono",monospace;font-size:11.5px;letter-spacing:.05em;color:var(--steel-dim);
+  padding:9px 12px;border-top:1px solid var(--edge);
+}
+@media (max-width:820px){.gallery{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:520px){.gallery{grid-template-columns:1fr;}}
+
+/* lightbox */
+.lightbox{
+  position:fixed;inset:0;background:rgba(6,8,10,.92);display:none;
+  align-items:center;justify-content:center;z-index:100;padding:24px;
+}
+.lightbox.open{display:flex;}
+.lightbox img{max-width:min(1200px,94vw);max-height:86vh;border:1px solid var(--edge-hi);border-radius:6px;}
+.lightbox .lb-close, .lightbox .lb-prev, .lightbox .lb-next{
+  position:absolute;background:var(--panel);border:1px solid var(--edge-hi);color:var(--paper);
+  border-radius:6px;cursor:pointer;font-family:"JetBrains Mono",monospace;font-size:14px;
+}
+.lightbox .lb-close{top:20px;right:20px;padding:10px 14px;}
+.lightbox .lb-prev{left:20px;top:50%;transform:translateY(-50%);padding:14px 18px;}
+.lightbox .lb-next{right:20px;top:50%;transform:translateY(-50%);padding:14px 18px;}
+.lightbox .lb-count{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--steel-dim);letter-spacing:.1em;}
+
+/* guide cards */
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
+@media (max-width:760px){.cards{grid-template-columns:1fr;}}
+.card{
+  background:linear-gradient(180deg,var(--panel-2),var(--panel));
+  border:1px solid var(--edge);border-top:1px solid var(--edge-hi);
+  border-radius:8px;padding:24px 26px;
+}
+.card .num{
+  font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--brass);letter-spacing:.14em;margin-bottom:8px;
+}
+.card h3{font-family:"Fjalla One",Impact,sans-serif;font-size:21px;margin:0 0 10px;color:var(--paper);letter-spacing:.01em;text-transform:uppercase;}
+.card p, .card ul{margin:0;color:var(--steel);font-size:15.5px;}
+.card ul{padding-left:20px;}
+.card li{margin-bottom:6px;}
+.card p strong, .card li strong, .card code{color:var(--paper);}
+.card code{
+  font-family:"JetBrains Mono",monospace;font-size:.88em;background:var(--panel-2);
+  border:1px solid var(--edge);padding:1px 6px;border-radius:3px;
+}
+
+/* AI trading section */
+.ai-section{background:linear-gradient(180deg,rgba(201,162,74,.05),transparent 40%);}
+.ai-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;}
+@media (max-width:820px){.ai-grid{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:560px){.ai-grid{grid-template-columns:1fr;}}
+.factor{
+  border:1px solid var(--edge);border-top:2px solid var(--brass-dim);background:var(--panel);
+  border-radius:8px;padding:20px 20px;
+}
+.factor h4{font-family:"Fjalla One",Impact,sans-serif;font-size:17px;margin:0 0 8px;color:var(--brass);letter-spacing:.01em;text-transform:uppercase;}
+.factor p{margin:0;color:var(--steel);font-size:14.5px;}
+.factor p strong{color:var(--paper);}
+.veto-box{
+  border-left:3px solid var(--alert);background:rgba(192,106,77,.08);border-radius:0 8px 8px 0;
+  padding:18px 22px;margin-top:8px;
+}
+.veto-box h4{color:var(--alert);font-family:"Fjalla One",Impact,sans-serif;text-transform:uppercase;font-size:16px;margin:0 0 8px;letter-spacing:.02em;}
+.veto-box p{margin:0;color:var(--steel);font-size:14.5px;}
+.veto-box p strong{color:var(--paper);}
+.split2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:28px;}
+@media (max-width:700px){.split2{grid-template-columns:1fr;}}
+.pp-panel{border:1px solid var(--edge);border-radius:8px;padding:20px 22px;background:var(--panel);}
+.pp-panel.no{border-top:2px solid var(--alert);}
+.pp-panel.yes{border-top:2px solid var(--good);}
+.pp-panel h4{font-family:"JetBrains Mono",monospace;font-size:13px;letter-spacing:.14em;text-transform:uppercase;margin:0 0 6px;}
+.pp-panel.no h4{color:var(--alert);}
+.pp-panel.yes h4{color:var(--good);}
+.pp-panel .verdict{font-family:"Fjalla One",Impact,sans-serif;font-size:24px;margin-bottom:8px;}
+.pp-panel.no .verdict{color:var(--alert);}
+.pp-panel.yes .verdict{color:var(--good);}
+.pp-panel p{margin:0;color:var(--steel);font-size:14.5px;}
+
+/* territory table */
+table.tprice{width:100%;border-collapse:collapse;margin-top:8px;font-size:15px;}
+table.tprice th{
+  text-align:left;font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--brass);font-weight:400;padding:0 16px 10px 0;border-bottom:1px solid var(--edge-hi);
+}
+table.tprice td{padding:12px 16px 12px 0;border-bottom:1px solid var(--edge);color:var(--steel);vertical-align:top;}
+table.tprice td:first-child{color:var(--paper);font-weight:600;}
+table.tprice td.num{font-family:"JetBrains Mono",monospace;color:var(--brass);white-space:nowrap;}
+.tscroll{overflow-x:auto;}
+.note{
+  margin-top:20px;border-left:3px solid var(--brass);padding:2px 0 2px 18px;color:var(--steel);font-size:14.5px;
+}
+.note strong{color:var(--paper);}
+
+/* download panel */
+.dl-panel{
+  display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;
+  border:1px solid var(--edge);border-top:1px solid var(--edge-hi);border-radius:10px;
+  background:var(--panel);padding:28px 30px;
+}
+.dl-panel .info h3{font-family:"Fjalla One",Impact,sans-serif;font-size:22px;margin:0 0 8px;color:var(--paper);text-transform:uppercase;letter-spacing:.01em;}
+.dl-panel .info p{margin:0;color:var(--steel);font-size:15px;max-width:52ch;}
+
+footer{border-top:1px solid var(--edge);padding:40px 0 60px;}
+.footgrid{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center;}
+footer p{margin:0;color:var(--steel-dim);font-size:13px;font-family:"JetBrains Mono",monospace;}
+footer .flinks{display:flex;gap:18px;flex-wrap:wrap;}
+footer .flinks a{color:var(--steel);text-decoration:none;font-size:13px;font-family:"JetBrains Mono",monospace;letter-spacing:.04em;}
+footer .flinks a:hover{color:var(--brass);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <a class="brand" href="#top"><img src="assets/logo.png" alt="Trade Anything"><span data-t="ru">Trade Anything</span><span data-t="en">Trade Anything</span></a>
+    <nav class="navlinks">
+      <a href="#gallery"><span data-t="ru">Скриншоты</span><span data-t="en">Screenshots</span></a>
+      <a href="#guide"><span data-t="ru">Гайд</span><span data-t="en">Guide</span></a>
+      <a href="#ai"><span data-t="ru">ИИ‑торговля</span><span data-t="en">AI trading</span></a>
+      <a href="#download"><span data-t="ru">Баланс</span><span data-t="en">Balance</span></a>
+    </nav>
+    <div class="langsw" role="group" aria-label="language">
+      <button type="button" data-setlang="ru" class="active">RU</button>
+      <button type="button" data-setlang="en">EN</button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero" style="border-top:none;padding-top:64px;">
+    <div class="wrap">
+      <div class="mark">Hearts of Iron IV · Mod</div>
+      <h1>Trade<br>Anything</h1>
+      <p class="sub" data-t="ru">Торгуйте с другими странами <strong>почти всем</strong>: территориями, снаряжением, кораблями, фабриками, людскими ресурсами и политической властью. ИИ оценивает вашу сделку по‑настоящему, а не просто соглашается.</p>
+      <p class="sub" data-t="en">Trade <strong>almost anything</strong> with other countries: territory, equipment, ships, factories, manpower and political power. The AI actually weighs your offer instead of just accepting it.</p>
+      <div class="cta">
+        <a class="btn primary" href="https://steamcommunity.com/sharedfiles/filedetails/?id=3438507431" target="_blank" rel="noopener">
+          <span data-t="ru">Открыть в Steam Workshop</span><span data-t="en">Open in Steam Workshop</span>
+        </a>
+        <a class="btn ghost" href="#gallery"><span data-t="ru">Смотреть скриншоты</span><span data-t="en">See screenshots</span></a>
+        <a class="btn ghost" href="assets/Trade_Anything_Balance.xlsx" download>
+          <span data-t="ru">Скачать баланс (.xlsx)</span><span data-t="en">Download balance (.xlsx)</span>
+        </a>
+      </div>
+      <div class="assets-row">
+        <span data-t="ru">ТЕРРИТОРИИ</span><span data-t="en">TERRITORY</span>
+        <span data-t="ru">ФАБРИКИ</span><span data-t="en">FACTORIES</span>
+        <span data-t="ru">СНАРЯЖЕНИЕ</span><span data-t="en">EQUIPMENT</span>
+        <span data-t="ru">КОРАБЛИ</span><span data-t="en">SHIPS</span>
+        <span data-t="ru">ЛЮДСКИЕ РЕСУРСЫ</span><span data-t="en">MANPOWER</span>
+        <span data-t="ru">ПОЛИТ. ВЛАСТЬ</span><span data-t="en">POLITICAL POWER</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section id="gallery">
+    <div class="wrap">
+      <div class="eyebrow" data-t="ru">Скриншоты</div>
+      <div class="eyebrow" data-t="en">Screenshots</div>
+      <h2 class="title" data-t="ru">Как это выглядит</h2>
+      <h2 class="title" data-t="en">What it looks like</h2>
+      <p class="lede" data-t="ru">Девять кадров из презентации мода — от отправки сделки до правила игры для мультиплеера. Кликните, чтобы открыть крупнее.</p>
+      <p class="lede" data-t="en">Nine frames from the mod's presentation deck — from sending a deal to the multiplayer game rule. Click to enlarge.</p>
+      <div class="gallery" id="gallery-grid">
+        <!-- filled by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- GUIDE -->
+  <section id="guide">
+    <div class="wrap">
+      <div class="eyebrow" data-t="ru">Гайд игрока</div>
+      <div class="eyebrow" data-t="en">Player guide</div>
+      <h2 class="title" data-t="ru">Пять минут — и вы разберётесь</h2>
+      <h2 class="title" data-t="en">Five minutes to get the hang of it</h2>
+      <p class="lede" data-t="ru">Короткая выжимка того, что нужно знать в первую очередь. Полный текст гайда идёт вместе с модом.</p>
+      <p class="lede" data-t="en">A short digest of what matters most. The full guide text ships with the mod.</p>
+
+      <div class="cards">
+        <div class="card">
+          <div class="num">01</div>
+          <h3 data-t="ru">Как отправить сделку</h3>
+          <h3 data-t="en">Sending a deal</h3>
+          <p data-t="ru">Дипломатия → страна → <strong>«Предложить обмен»</strong>. Окно делится на «вы отдаёте» и «вы получаете» — можно только отдать, только попросить, или и то и другое. Категории: регионы, снаряжение и корабли, политвласть, людские ресурсы, фабрики — выбранное в одной категории не сбрасывается при переходе в другую.</p>
+          <p data-t="en">Diplomacy → country → <strong>"Propose exchange"</strong>. The window splits into "you give" and "you get" — give only, ask only, or both. Categories: territory, equipment &amp; ships, political power, manpower, factories — picks in one category persist when you switch to another.</p>
+        </div>
+
+        <div class="card">
+          <div class="num">02</div>
+          <h3 data-t="ru">Территория прямо с карты</h3>
+          <h3 data-t="en">Territory straight from the map</h3>
+          <p data-t="ru">Самая неочевидная фича. Пока окно сделки открыто, кликните по территории на карте — в панели штата появится кнопка <strong>«Добавить в сделку»</strong>. Работает только на землях двух сторон сделки; чужую территорию так не добавить.</p>
+          <p data-t="en">The least obvious feature. With the deal window open, click a territory on the map — the state panel gets an <strong>"Add to deal"</strong> button. Only works on land belonging to either side of the deal.</p>
+        </div>
+
+        <div class="card">
+          <div class="num">03</div>
+          <h3 data-t="ru">MIN, MAX и Shift</h3>
+          <h3 data-t="en">MIN, MAX and Shift</h3>
+          <p data-t="ru">Числовые категории имеют <code>0</code>, <code>MAX</code> и шаги. <strong>Shift</strong> увеличивает шаг ×10 для людских ресурсов. <strong>MAX</strong> означает разное: на вашей стороне — ваш реальный максимум, на стороне партнёра — фиксированный публичный потолок запроса, а не его настоящий запас.</p>
+          <p data-t="en">Numeric categories have <code>0</code>, <code>MAX</code> and step buttons. <strong>Shift</strong> multiplies the manpower step by 10. <strong>MAX</strong> means different things: on your side it's your real maximum; on the partner's side it's a fixed public request ceiling, not their actual stockpile.</p>
+        </div>
+
+        <div class="card">
+          <div class="num">04</div>
+          <h3 data-t="ru">Согласие — не передача</h3>
+          <h3 data-t="en">Acceptance isn't transfer</h3>
+          <p data-t="ru">Партнёр согласился — ничего ещё не передано. Приходит окно с точными объёмами, включая разбивку по каждому типу снаряжения: запрошенное могло быть урезано до реально доступного. Отказ — сделка ждёт 30 дней и отменяется сама.</p>
+          <p data-t="en">The partner accepted — nothing has moved yet. A confirmation window shows exact amounts, broken down per equipment type: what you asked for may have been trimmed to what's actually available. Decline it and the pending deal expires by itself after 30 days.</p>
+        </div>
+
+        <div class="card">
+          <div class="num">05</div>
+          <h3 data-t="ru">Мультиплеер</h3>
+          <h3 data-t="en">Multiplayer</h3>
+          <p data-t="ru">Игровое правило <strong>«Trade Anything: торговля с ИИ»</strong> в лобби (группа внешней политики): включена по умолчанию, либо только между живыми игроками. Выбирает хост, действует на всех, менять посреди партии нельзя. Обмен между людьми не затрагивается ни в одном варианте.</p>
+          <p data-t="en">A lobby game rule, <strong>"Trade Anything: trading with the AI"</strong> (diplomacy group): on by default, or human players only. The host picks it, it applies to everyone, and it can't change mid-game. Player-to-player trading is untouched either way.</p>
+        </div>
+
+        <div class="card">
+          <div class="num">06</div>
+          <h3 data-t="ru">Мелочи</h3>
+          <h3 data-t="en">Good to know</h3>
+          <ul>
+            <li data-t="ru">Плашка «согласятся/не согласятся» пересчитывается на каждое изменение предложения — это не прогноз, а тот же расчёт, что и при отправке.</li>
+            <li data-t="en">The accept/decline hint recalculates on every change to the offer — it's the same calculation used on send, not a guess.</li>
+            <li data-t="ru">Снаряжение передаётся сначала новое — то есть отдаёте вы лучшее.</li>
+            <li data-t="en">Equipment is transferred newest-first, so you give away your best stock.</li>
+            <li data-t="ru">ИИ ↔ ИИ торговля выключена намеренно.</li>
+            <li data-t="en">AI-to-AI trading is intentionally disabled.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI TRADING -->
+  <section id="ai" class="ai-section">
+    <div class="wrap">
+      <div class="eyebrow" data-t="ru">Как думает ИИ</div>
+      <div class="eyebrow" data-t="en">How the AI thinks</div>
+      <h2 class="title" data-t="ru">Почему ИИ отказывается от «выгодного» предложения</h2>
+      <h2 class="title" data-t="en">Why the AI turns down a "good" offer</h2>
+      <p class="lede" data-t="ru">ИИ не считает одну общую сумму — он взвешивает несколько отдельных вещей, и часть из них деньгами не перебивается вовсе.</p>
+      <p class="lede" data-t="en">The AI doesn't add everything into one total — it weighs several separate factors, and some of them can't be bought off with money at all.</p>
+
+      <div class="ai-grid">
+        <div class="factor">
+          <h4 data-t="ru">Экономическая ценность</h4>
+          <h4 data-t="en">Economic value</h4>
+          <p data-t="ru">Базовая цена того, что просят или предлагают — производство, ресурсы, инфраструктура.</p>
+          <p data-t="en">The baseline price of what's offered or requested — production, resources, infrastructure.</p>
+        </div>
+        <div class="factor">
+          <h4 data-t="ru">Потребность</h4>
+          <h4 data-t="en">Need</h4>
+          <p data-t="ru">Чего ИИ не хватает, он ценит <strong>выше рынка</strong>; излишки — ниже.</p>
+          <p data-t="en">What the AI is short of, it values <strong>above market</strong>; surplus is valued below.</p>
+        </div>
+        <div class="factor">
+          <h4 data-t="ru">Резерв</h4>
+          <h4 data-t="en">Reserve</h4>
+          <p data-t="ru">Ниже критического запаса ИИ не опустится <strong>ни за какие деньги</strong>.</p>
+          <p data-t="en">It will not go below a critical reserve <strong>at any price</strong>.</p>
+        </div>
+        <div class="factor">
+          <h4 data-t="ru">Доля от запаса</h4>
+          <h4 data-t="en">Share of stockpile</h4>
+          <p data-t="ru">5 фабрик из 8 и 5 из 200 — разные просьбы. Штраф растёт <strong>нелинейно</strong> от доли, а не от количества.</p>
+          <p data-t="en">5 factories out of 8 and 5 out of 200 are different requests. The penalty scales <strong>non-linearly</strong> with share, not headcount.</p>
+        </div>
+        <div class="factor">
+          <h4 data-t="ru">Безопасность и отношения</h4>
+          <h4 data-t="en">Security &amp; relations</h4>
+          <p data-t="ru">Опасному соседу продают дороже, иногда не продают вовсе: войны, претензии, гарантии, фракции, напряжённость, соотношение сил.</p>
+          <p data-t="en">A dangerous neighbour pays more, sometimes nothing is for sale at all: wars, claims, guarantees, factions, tension, relative strength.</p>
+        </div>
+        <div class="factor">
+          <h4 data-t="ru">Никакого хардкода</h4>
+          <h4 data-t="en">No hardcoding</h4>
+          <p data-t="ru">Всё считается от текущего состояния мира — альтернативные союзы работают без штрафа за «неисторичность».</p>
+          <p data-t="en">Everything is read from the current world state — alternate alliances work with no "unhistorical" penalty.</p>
+        </div>
+      </div>
+
+      <div class="veto-box">
+        <h4 data-t="ru">Жёсткие запреты (hard veto)</h4>
+        <h4 data-t="en">Hard vetoes</h4>
+        <p data-t="ru"><strong>Столица</strong> и страна на грани капитуляции — отказ независимо от суммы. Никакая цена это не снимает. Практический вывод: если отказали — меняйте <strong>состав</strong> предложения, а не только сумму.</p>
+        <p data-t="en">A <strong>capital</strong>, or a country near capitulation — refused regardless of price. No amount of money changes that. Takeaway: if refused, change the <strong>composition</strong> of the offer, not just the total.</p>
+      </div>
+
+      <div class="split2">
+        <div class="pp-panel no">
+          <h4 data-t="ru">Вы → ИИ</h4>
+          <h4 data-t="en">You → AI</h4>
+          <div class="verdict" data-t="ru">Нельзя</div>
+          <div class="verdict" data-t="en">Not allowed</div>
+          <p data-t="ru">Свою политическую власть предложить ИИ нельзя — контрол на вашей стороне скрыт.</p>
+          <p data-t="en">You cannot offer your own political power to the AI — the control is hidden on your side.</p>
+        </div>
+        <div class="pp-panel yes">
+          <h4 data-t="ru">ИИ → Вы</h4>
+          <h4 data-t="en">AI → You</h4>
+          <div class="verdict" data-t="ru">Можно</div>
+          <div class="verdict" data-t="en">Allowed</div>
+          <p data-t="ru">Запросить политическую власть у ИИ можно и работает как обычно. Между живыми игроками ограничений нет — ПП ходит в обе стороны.</p>
+          <p data-t="en">Requesting political power from the AI works normally. No limits between human players — it flows both ways there.</p>
+        </div>
+      </div>
+
+      <h3 style="font-family:'Fjalla One',Impact,sans-serif;text-transform:uppercase;letter-spacing:.01em;font-size:22px;margin:44px 0 6px;color:var(--paper);">
+        <span data-t="ru">Территории оцениваются по-разному</span><span data-t="en">Territory is priced on what it actually is</span>
+      </h3>
+      <p class="lede" style="margin-bottom:18px;" data-t="ru">Два одинаковых по размеру региона могут стоить в разы по-разному.</p>
+      <p class="lede" style="margin-bottom:18px;" data-t="en">Two similarly sized regions can be priced worlds apart.</p>
+
+      <div class="tscroll">
+        <table class="tprice">
+          <tr>
+            <th data-t="ru">Что учитывается</th><th data-t="en">Factor</th>
+            <th data-t="ru">Эффект</th><th data-t="en">Effect</th>
+            <th data-t="ru">Пример</th><th data-t="en">Example</th>
+          </tr>
+          <tr>
+            <td data-t="ru">Стратегичность (проливы, порты)</td><td data-t="en">Strategic value (straits, ports)</td>
+            <td class="num">×2.0 … ×3.5</td>
+            <td data-t="ru">Гибралтар и Босфор — высший тир</td><td data-t="en">Gibraltar and the Bosphorus are top tier</td>
+          </tr>
+          <tr>
+            <td data-t="ru">Свой core / столица</td><td data-t="en">Own core / capital</td>
+            <td class="num">×1.6 … ×4.0</td>
+            <td data-t="ru">столицу не продают вовсе</td><td data-t="en">a capital is never for sale</td>
+          </tr>
+          <tr>
+            <td data-t="ru">Нехватка ресурса у покупателя</td><td data-t="en">Buyer's resource shortage</td>
+            <td class="num">×1.4 … ×2.0</td>
+            <td data-t="ru">нефть дороже для того, у кого её нет</td><td data-t="en">oil costs more to whoever lacks it</td>
+          </tr>
+          <tr>
+            <td data-t="ru">Недоступность для нового владельца</td><td data-t="en">Unreachable for the new owner</td>
+            <td class="num">×0.35 … ×0.85</td>
+            <td data-t="ru">анклав без связи стоит почти ничего</td><td data-t="en">a disconnected enclave costs almost nothing</td>
+          </tr>
+          <tr>
+            <td data-t="ru">Минимальная цена региона</td><td data-t="en">Minimum region price</td>
+            <td class="num">500</td>
+            <td data-t="ru">ориентир: 1 фабрика ≈ 100</td><td data-t="en">for reference: 1 factory ≈ 100</td>
+          </tr>
+        </table>
+      </div>
+      <div class="note">
+        <span data-t="ru"><strong>Множители не перемножаются</strong> — берётся самый сильный. Связность считается от земли, которой вы уже владеете.</span>
+        <span data-t="en"><strong>Multipliers don't stack</strong> — the strongest one applies. Connectivity is measured from land you already own.</span>
+      </div>
+      <div class="note">
+        <span data-t="ru"><strong>Анти-разведка:</strong> через окно сделки нельзя узнать реальные запасы ИИ. На его стороне показаны фиксированные публичные потолки запроса, а не то, что у него есть на самом деле.</span>
+        <span data-t="en"><strong>Anti-scouting:</strong> the trade window can't be used to learn an AI's real stockpiles. Its side shows fixed public request ceilings, not what it actually holds.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOWNLOAD -->
+  <section id="download">
+    <div class="wrap">
+      <div class="eyebrow" data-t="ru">Баланс</div>
+      <div class="eyebrow" data-t="en">Balance</div>
+      <h2 class="title" data-t="ru">Все веса и коэффициенты — в открытую</h2>
+      <h2 class="title" data-t="en">Every weight and multiplier, out in the open</h2>
+      <p class="lede" data-t="ru">Полная таблица цен снаряжения, множителей территорий и сверка с ванильной стоимостью производства.</p>
+      <p class="lede" data-t="en">The full table of equipment prices, territory multipliers, and a check against vanilla production cost.</p>
+
+      <div class="dl-panel">
+        <div class="info">
+          <h3>Trade_Anything_Balance.xlsx</h3>
+          <p data-t="ru">Таблица весов и коэффициентов ИИ в читаемом виде, включая лист «Аудит кривой» — наша цена против ванильной стоимости производства.</p>
+          <p data-t="en">A readable table of the AI's weights and coefficients, including a "curve audit" sheet comparing our pricing against vanilla production cost.</p>
+        </div>
+        <a class="btn primary" href="assets/Trade_Anything_Balance.xlsx" download>
+          <span data-t="ru">Скачать .xlsx</span><span data-t="en">Download .xlsx</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap footgrid">
+    <p data-t="ru">Trade Anything — мод для Hearts of Iron IV. Не является официальным продуктом Paradox Interactive.</p>
+    <p data-t="en">Trade Anything is a Hearts of Iron IV mod. Not affiliated with Paradox Interactive.</p>
+    <div class="flinks">
+      <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3438507431" target="_blank" rel="noopener">Steam Workshop</a>
+      <a href="assets/Trade_Anything_Balance.xlsx" download><span data-t="ru">Баланс .xlsx</span><span data-t="en">Balance .xlsx</span></a>
+    </div>
+  </div>
+</footer>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" id="lb-close" aria-label="close">&times;</button>
+  <button class="lb-prev" id="lb-prev" aria-label="prev">&larr;</button>
+  <img id="lb-img" src="" alt="">
+  <button class="lb-next" id="lb-next" aria-label="next">&rarr;</button>
+  <span class="lb-count" id="lb-count"></span>
+</div>
+
+<script>
+(function(){
+  var slides = [
+    {file:"Trade_Anything_slide_01.png", ru:"Обзор мода", en:"Mod overview"},
+    {file:"Trade_Anything_slide_02.png", ru:"Как отправить сделку", en:"How to send a deal"},
+    {file:"Trade_Anything_slide_03.png", ru:"Территории с карты", en:"Territory from the map"},
+    {file:"Trade_Anything_slide_04.png", ru:"MIN, MAX и Shift", en:"MIN, MAX and Shift"},
+    {file:"Trade_Anything_slide_05.png", ru:"Политическая власть", en:"Political power"},
+    {file:"Trade_Anything_slide_06.png", ru:"Согласие — не передача", en:"Acceptance isn't transfer"},
+    {file:"Trade_Anything_slide_07.png", ru:"Решение ИИ", en:"The AI's decision"},
+    {file:"Trade_Anything_slide_08.png", ru:"Цена земли", en:"Land pricing"},
+    {file:"Trade_Anything_slide_09.png", ru:"Мультиплеер", en:"Multiplayer"}
+  ];
+
+  var grid = document.getElementById('gallery-grid');
+  slides.forEach(function(s, i){
+    var fig = document.createElement('figure');
+    fig.innerHTML =
+      '<img loading="lazy" src="assets/slides/' + s.file + '" alt="' + s.en + '">' +
+      '<figcaption><span data-t="ru">' + (i+1) + ' / 9 — ' + s.ru + '</span>' +
+      '<span data-t="en">' + (i+1) + ' / 9 — ' + s.en + '</span></figcaption>';
+    fig.addEventListener('click', function(){ openLB(i); });
+    grid.appendChild(fig);
+  });
+
+  var lb = document.getElementById('lightbox');
+  var lbImg = document.getElementById('lb-img');
+  var lbCount = document.getElementById('lb-count');
+  var current = 0;
+
+  function lang(){ return document.documentElement.getAttribute('data-lang'); }
+
+  function openLB(i){
+    current = i;
+    render();
+    lb.classList.add('open');
+  }
+  function render(){
+    var s = slides[current];
+    lbImg.src = 'assets/slides/' + s.file;
+    lbImg.alt = lang() === 'ru' ? s.ru : s.en;
+    lbCount.textContent = (current+1) + ' / ' + slides.length + ' — ' + (lang()==='ru' ? s.ru : s.en);
+  }
+  function closeLB(){ lb.classList.remove('open'); }
+  function prev(){ current = (current - 1 + slides.length) % slides.length; render(); }
+  function next(){ current = (current + 1) % slides.length; render(); }
+
+  document.getElementById('lb-close').addEventListener('click', closeLB);
+  document.getElementById('lb-prev').addEventListener('click', prev);
+  document.getElementById('lb-next').addEventListener('click', next);
+  lb.addEventListener('click', function(e){ if(e.target === lb) closeLB(); });
+  document.addEventListener('keydown', function(e){
+    if(!lb.classList.contains('open')) return;
+    if(e.key === 'Escape') closeLB();
+    if(e.key === 'ArrowLeft') prev();
+    if(e.key === 'ArrowRight') next();
+  });
+
+  // language switch
+  var buttons = document.querySelectorAll('.langsw button');
+  function setLang(l){
+    document.documentElement.setAttribute('data-lang', l);
+    document.documentElement.setAttribute('lang', l);
+    buttons.forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-setlang') === l); });
+    try{ localStorage.setItem('ta-lang', l); }catch(e){}
+    if(lb.classList.contains('open')) render();
+  }
+  buttons.forEach(function(b){
+    b.addEventListener('click', function(){ setLang(b.getAttribute('data-setlang')); });
+  });
+
+  var saved = null;
+  try{ saved = localStorage.getItem('ta-lang'); }catch(e){}
+  if(!saved){
+    saved = (navigator.language || '').toLowerCase().indexOf('ru') === 0 ? 'ru' : 'en';
+  }
+  setLang(saved);
+})();
+</script>
+
+</body>
+</html>
